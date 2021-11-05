@@ -83,3 +83,28 @@ jobs:
         if: ${{ failure() }}
         with:
           limit-access-to-actor: true
+
+  binding_tester:
+    strategy:
+      matrix:
+        test-name: [api, directory, directory_hca, scripted, tuple]
+        api-version: [610, 620]
+    container:
+      image: kocolosk/erlfdb-bindingtester-ci:latest
+    services:
+      foundationdb:
+        image: foundationdb/foundationdb:6.2.30
+        ports: [4500]
+    steps:
+      - name: Create FDB cluster file
+        shell: bash
+        run: /usr/local/bin/create_cluster_file.bash
+      - name: Compile erlfdb
+        run: rebar3 compile
+      - name: Execute binding test
+        env:
+          TEST_NAME: ${{ matrix.test-name }}
+          API_VERSION: ${{ matrix.api-version }}
+          ERL_LIBS: /usr/src/erlfdb/_build/default/lib/erlfdb/
+        working-directory: /usr/src/foundationdb/bindings/bindingtester/
+        run: ./bindingtester.py erlang --test-name $TEST_NAME --api-version $API_VERSION --num-ops 10000
