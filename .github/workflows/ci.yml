@@ -109,12 +109,19 @@ jobs:
         run: /usr/local/bin/create_cluster_file.bash
       - name: Initialize FDB database
         run: fdbcli --exec "configure new single ssd"
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
       - name: Compile erlfdb
         run: rebar3 compile
       - name: Execute binding test
         env:
           TEST_NAME: ${{ matrix.test-name }}
           API_VERSION: ${{ matrix.api-version }}
-          ERL_LIBS: /usr/src/erlfdb/_build/default/lib/erlfdb/
-        working-directory: /usr/src/foundationdb/bindings/bindingtester/
-        run: ./bindingtester.py erlang --test-name $TEST_NAME --api-version $API_VERSION --num-ops 10000
+          ERL_LIBS: _build/default/lib/erlfdb/
+        run: |
+          /usr/src/foundationdb/bindings/bindingtester/bindingtester.py erlang \
+              --test-name $TEST_NAME \
+              --api-version $API_VERSION \
+              --num-ops 10000
