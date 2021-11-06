@@ -107,6 +107,8 @@ jobs:
           FDB_COORDINATOR: foundationdb
         shell: bash
         run: /usr/local/bin/create_cluster_file.bash
+      - name: Initialize FDB database
+        run: fdbcli --exec "configure new single ssd"
       - name: Compile erlfdb
         run: rebar3 compile
       - name: Execute binding test
