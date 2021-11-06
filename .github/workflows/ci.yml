@@ -88,8 +88,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test-name: [api, directory, directory_hca, scripted, tuple]
+        test-name: [api, directory, directory_hca, tuple]
         api-version: [610, 620]
+        include:
+          # The `scripted` test only supports the latest API version
+          - test-name: scripted
+            api-version: 620
     container:
       image: kocolosk/erlfdb-bindingtester-ci:latest
     services:
@@ -98,8 +102,9 @@ jobs:
     steps:
       - name: Create FDB cluster file
         env:
+          # This needs to match the name of the service above so the script can do
+          # a DNS lookup to write down the coordinator IP in the fdb.cluster file
           FDB_COORDINATOR: foundationdb
-          FDB_CLUSTER_FILE: /usr/local/etc/foundationdb/fdb.cluster
         shell: bash
         run: /usr/local/bin/create_cluster_file.bash
       - name: Compile erlfdb
