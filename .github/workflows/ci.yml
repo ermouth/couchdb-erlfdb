@@ -121,6 +121,8 @@ jobs:
           API_VERSION: ${{ matrix.api-version }}
           ERL_LIBS: _build/default/lib/erlfdb/
         run: |
+          mkdir -p /usr/src/erlfdb/test/
+          ln -s $GITHUB_WORKSPACE/test/tester.es /usr/src/erlfdb/test/tester.es
           /usr/src/foundationdb/bindings/bindingtester/bindingtester.py erlang \
               --test-name $TEST_NAME \
               --api-version $API_VERSION \
