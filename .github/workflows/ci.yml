@@ -85,6 +85,7 @@ jobs:
           limit-access-to-actor: true
 
   binding_tester:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         test-name: [api, directory, directory_hca, scripted, tuple]
