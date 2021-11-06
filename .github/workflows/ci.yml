@@ -95,9 +95,11 @@ jobs:
     services:
       foundationdb:
         image: foundationdb/foundationdb:6.2.30
-        ports: [4500]
     steps:
       - name: Create FDB cluster file
+        env:
+          FDB_COORDINATOR: foundationdb
+          FDB_CLUSTER_FILE: /usr/local/etc/foundationdb/fdb.cluster
         shell: bash
         run: /usr/local/bin/create_cluster_file.bash
       - name: Compile erlfdb
